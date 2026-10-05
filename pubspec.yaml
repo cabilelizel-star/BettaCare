@@ -1,0 +1,47 @@
+name: bettacare_flutter
+description: "BettaCare - Integrated Fish Management with Automated Feeding and Care Logging"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # Firebase
+  firebase_core: ^3.15.1
+  firebase_auth: ^5.6.2
+  cloud_firestore: ^5.6.9
+
+  # HTTP for EmailJS OTP
+  http: ^1.2.2
+
+  # State management
+  provider: ^6.1.5
+
+  # Navigation
+  go_router: ^15.1.2
+
+  # UI utilities
+  google_fonts: ^6.2.1
+  intl: ^0.20.2
+  url_launcher: ^6.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/images/betta-logo.jpg"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
