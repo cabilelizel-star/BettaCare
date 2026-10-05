@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/owner_actions.dart';
+import '../../widgets/common.dart';
 
 class PaymentManagementScreen extends StatefulWidget {
   const PaymentManagementScreen({super.key});
@@ -44,6 +46,7 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen>
             }
           },
         ),
+        actions: const [OwnerAppBarActions()],
         bottom: TabBar(
           controller: _tabs,
           tabs: const [

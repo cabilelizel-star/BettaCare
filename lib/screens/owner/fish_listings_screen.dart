@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/owner_actions.dart';
 
 class FishListingsScreen extends StatelessWidget {
   const FishListingsScreen({super.key});
@@ -78,7 +79,7 @@ class FishListingsScreen extends StatelessWidget {
             }
           },
         ),
-        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () => _showModal(context))],
+        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () => _showModal(context)), const OwnerAppBarActions()],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: db.collection('fish_listings').orderBy('createdAt', descending: true).snapshots(),

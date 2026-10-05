@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/owner_actions.dart';
+import '../../widgets/common.dart';
 
 // ─── Linear regression helper ────────────────────────────────────────────────
 /// Returns [slope, intercept] for y = slope * x + intercept
@@ -43,6 +45,7 @@ class ReportsScreen extends StatelessWidget {
             }
           },
         ),
+        actions: const [OwnerAppBarActions()],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: db.collection('orders').snapshots(),

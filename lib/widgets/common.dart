@@ -367,3 +367,169 @@ Future<void> confirmSignOut(BuildContext context) async {
     ),
   );
 }
+
+// ── Full-screen image viewer ──────────────────────────────────
+/// Opens a full-screen zoomable image overlay — same behaviour as the
+/// web's ExpandableImage component. Tap anywhere or press the close
+/// button to dismiss.
+void showFullScreenImage(BuildContext context, String imageUrl,
+    {String heroTag = 'fish-photo'}) {
+  Navigator.of(context).push(
+    PageRouteBuilder(
+      opaque: false,
+      barrierColor: Colors.black87,
+      barrierDismissible: true,
+      pageBuilder: (ctx, animation, _) => FadeTransition(
+        opacity: animation,
+        child: _FullScreenImagePage(imageUrl: imageUrl, heroTag: heroTag),
+      ),
+    ),
+  );
+}
+
+class _FullScreenImagePage extends StatefulWidget {
+  final String imageUrl;
+  final String heroTag;
+  const _FullScreenImagePage(
+      {required this.imageUrl, required this.heroTag});
+
+  @override
+  State<_FullScreenImagePage> createState() => _FullScreenImagePageState();
+}
+
+class _FullScreenImagePageState extends State<_FullScreenImagePage> {
+  final TransformationController _transform = TransformationController();
+
+  @override
+  void dispose() {
+    _transform.dispose();
+    super.dispose();
+  }
+
+  void _resetZoom() => _transform.value = Matrix4.identity();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pop(),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            // Dark background
+            Container(color: Colors.black87),
+
+            // Zoomable image
+            Center(
+              child: GestureDetector(
+                // Prevent tap-to-close when interacting with the image
+                onTap: () {},
+                child: InteractiveViewer(
+                  transformationController: _transform,
+                  minScale: 0.8,
+                  maxScale: 5.0,
+                  child: Hero(
+                    tag: widget.heroTag,
+                    child: Image.network(
+                      widget.imageUrl,
+                      fit: BoxFit.contain,
+                      loadingBuilder: (_, child, progress) {
+                        if (progress == null) return child;
+                        return SizedBox(
+                          width: 200,
+                          height: 200,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: progress.expectedTotalBytes != null
+                                  ? progress.cumulativeBytesLoaded /
+                                      progress.expectedTotalBytes!
+                                  : null,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.broken_image_outlined,
+                        color: Colors.white54,
+                        size: 64,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Top bar — close + reset zoom
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Close
+                      Material(
+                        color: Colors.black45,
+                        borderRadius: BorderRadius.circular(24),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(24),
+                          onTap: () => Navigator.of(context).pop(),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Icon(Icons.close,
+                                color: Colors.white, size: 22),
+                          ),
+                        ),
+                      ),
+                      // Reset zoom (shown only if zoomed in)
+                      AnimatedBuilder(
+                        animation: _transform,
+                        builder: (_, __) {
+                          final zoomed = _transform.value
+                                  .getMaxScaleOnAxis() >
+                              1.05;
+                          if (!zoomed) return const SizedBox.shrink();
+                          return Material(
+                            color: Colors.black45,
+                            borderRadius: BorderRadius.circular(24),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(24),
+                              onTap: _resetZoom,
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.zoom_out_map,
+                                        color: Colors.white, size: 16),
+                                    SizedBox(width: 4),
+                                    Text('Reset zoom',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+

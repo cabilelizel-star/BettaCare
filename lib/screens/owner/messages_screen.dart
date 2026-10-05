@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/owner_actions.dart';
 
 class MessagesScreen extends StatelessWidget {
   const MessagesScreen({super.key});
@@ -40,6 +41,7 @@ class MessagesScreen extends StatelessWidget {
             }
           },
         ),
+        actions: const [OwnerAppBarActions()],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: db.collection('chats').orderBy('lastAt', descending: true).snapshots(),

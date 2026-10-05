@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/owner_actions.dart';
 
 // ─── Category helpers ────────────────────────────────────────────────────────
 const _categories = ['All', 'feeding', 'water', 'breeding', 'fish', 'fry', 'order', 'other'];
@@ -111,6 +112,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             tooltip: 'Add Task',
             onPressed: () => _showAddTaskDialog(context),
           ),
+          const OwnerAppBarActions(),
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(

@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/notification_bell.dart';
+import '../../widgets/owner_actions.dart';
 import '../shell/app_shell.dart';
 
 // ── Breeding status config ──────────────────────────────────
@@ -53,11 +54,8 @@ class OwnerDashboard extends StatelessWidget {
             onPressed: () => Scaffold.of(ctx).openDrawer(),
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: NotificationBell(),
-          ),
+        actions: const [
+          OwnerAppBarActions(),
         ],
       ),
       drawer: OwnerDrawer(),

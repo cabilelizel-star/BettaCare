@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/owner_actions.dart';
 
 const Map<String, Map<String, dynamic>> kBatchStatus = {
   'Spawning':  {'color': Color(0xFF2563EB), 'bg': Color(0xFFEFF6FF)},
@@ -176,7 +177,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.canPop() ? context.pop() : context.go('/owner/dashboard'),
         ),
-        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () => _showModal())],
+        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () => _showModal()), const OwnerAppBarActions()],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _db.collection('breeding_batches').orderBy('createdAt', descending: false).snapshots(),

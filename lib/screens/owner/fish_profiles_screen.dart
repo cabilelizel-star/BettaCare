@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/owner_actions.dart';
 
 // ── Health config ─────────────────────────────────────────────
 const Map<String, Map<String, dynamic>> kHealthConfig = {
@@ -568,20 +569,58 @@ class _FishProfilesScreenState extends State<FishProfilesScreen> {
 
                 // Photo
                 if ((d['photoUrl'] ?? '').isNotEmpty)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: SizedBox(
-                      height: 200,
-                      width: double.infinity,
-                      child: Image.network(
-                        d['photoUrl'],
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          color: AppTheme.primary.withAlpha(20),
-                          child: const Icon(Icons.set_meal,
-                              color: AppTheme.primary, size: 48),
+                  GestureDetector(
+                    onTap: () => showFullScreenImage(
+                      ctx,
+                      d['photoUrl'],
+                      heroTag: 'fish-detail-$docId',
+                    ),
+                    child: Stack(
+                      children: [
+                        Hero(
+                          tag: 'fish-detail-$docId',
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: SizedBox(
+                              height: 200,
+                              width: double.infinity,
+                              child: Image.network(
+                                d['photoUrl'],
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  color: AppTheme.primary.withAlpha(20),
+                                  child: const Icon(Icons.set_meal,
+                                      color: AppTheme.primary, size: 48),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        // Expand hint overlay
+                        Positioned(
+                          bottom: 10,
+                          right: 10,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.zoom_in,
+                                    color: Colors.white, size: 14),
+                                SizedBox(width: 4),
+                                Text('Tap to expand',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 11)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 if ((d['photoUrl'] ?? '').isEmpty)
@@ -808,37 +847,40 @@ class _FishProfilesScreenState extends State<FishProfilesScreen> {
             tooltip: 'Add Fish',
             onPressed: () => _showModal(),
           ),
+          const OwnerAppBarActions(),
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        // ── FIX: do NOT filter by 'archived' field —
-        // Web never sets that field, so isNotEqualTo would exclude
-        // all web-created fish. Filter by status != 'Archived' instead,
-        // which only matches fish explicitly archived from Flutter.
+        // Fetch ALL fish with no server-side filter.
+        // The web never writes 'archived' or 'status' fields, so any
+        // isNotEqualTo/isEqualTo query would silently exclude web-created
+        // documents. We filter client-side instead.
         stream: _db
             .collection('fish')
-            .where('status', isNotEqualTo: 'Archived')
+            .orderBy('createdAt', descending: false)
             .snapshots(),
         builder: (context, snap) {
           if (snap.hasError) {
-            // Fallback: if the compound query fails (e.g. no index),
-            // fetch all and filter client-side
+            // orderBy may fail if no index; fall back to unordered fetch
             return StreamBuilder<QuerySnapshot>(
               stream: _db.collection('fish').snapshots(),
               builder: (context, allSnap) {
                 if (!allSnap.hasData) return const LoadingWidget();
                 final allDocs = allSnap.data!.docs
                     .where((d) =>
-                        (d.data() as Map)['status'] != 'Archived')
+                        (d.data() as Map)['status'] != 'Archived' &&
+                        (d.data() as Map)['archived'] != true)
                     .toList();
                 return _buildBody(allDocs);
               },
             );
           }
           if (!snap.hasData) return const LoadingWidget();
-          // Also filter client-side in case status field absent
+          // Client-side exclude anything explicitly archived
           final allDocs = snap.data!.docs
-              .where((d) => (d.data() as Map)['status'] != 'Archived')
+              .where((d) =>
+                  (d.data() as Map)['status'] != 'Archived' &&
+                  (d.data() as Map)['archived'] != true)
               .toList();
           return _buildBody(allDocs);
         },
@@ -1048,30 +1090,45 @@ class _FishProfilesScreenState extends State<FishProfilesScreen> {
                         children: [
                           // ── Photo with health badge overlay ──
                           Stack(children: [
-                            ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(16)),
-                              child: SizedBox(
-                                height: 100,
-                                width: double.infinity,
-                                child: (d['photoUrl'] ?? '').isNotEmpty
-                                    ? Image.network(
+                            // Tapping the photo opens full-screen viewer
+                            GestureDetector(
+                              onTap: (d['photoUrl'] ?? '').isNotEmpty
+                                  ? () => showFullScreenImage(
+                                        context,
                                         d['photoUrl'],
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) =>
-                                            Container(
-                                              color: AppTheme.primary
-                                                  .withAlpha(20),
-                                              child: const Icon(
-                                                  Icons.set_meal,
-                                                  color: AppTheme.primary,
-                                                  size: 32),
-                                            ))
-                                    : Container(
-                                        color: AppTheme.primary.withAlpha(20),
-                                        child: const Icon(Icons.set_meal,
-                                            color: AppTheme.primary, size: 32),
-                                      ),
+                                        heroTag: 'fish-${doc.id}',
+                                      )
+                                  : null,
+                              child: Hero(
+                                tag: 'fish-${doc.id}',
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(16)),
+                                  child: SizedBox(
+                                    height: 100,
+                                    width: double.infinity,
+                                    child: (d['photoUrl'] ?? '').isNotEmpty
+                                        ? Image.network(
+                                            d['photoUrl'],
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                Container(
+                                                  color: AppTheme.primary
+                                                      .withAlpha(20),
+                                                  child: const Icon(
+                                                      Icons.set_meal,
+                                                      color: AppTheme.primary,
+                                                      size: 32),
+                                                ))
+                                        : Container(
+                                            color:
+                                                AppTheme.primary.withAlpha(20),
+                                            child: const Icon(Icons.set_meal,
+                                                color: AppTheme.primary,
+                                                size: 32),
+                                          ),
+                                  ),
+                                ),
                               ),
                             ),
                             // Health badge
@@ -1094,6 +1151,21 @@ class _FishProfilesScreenState extends State<FishProfilesScreen> {
                                 ),
                               ),
                             ),
+                            // Expand icon hint (only when photo exists)
+                            if ((d['photoUrl'] ?? '').isNotEmpty)
+                              Positioned(
+                                bottom: 6,
+                                right: 6,
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black45,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Icon(Icons.zoom_in,
+                                      color: Colors.white, size: 14),
+                                ),
+                              ),
                           ]),
 
                           // ── Content ──

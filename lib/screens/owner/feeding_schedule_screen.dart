@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/owner_actions.dart';
 
 class FeedingScheduleScreen extends StatefulWidget {
   const FeedingScheduleScreen({super.key});
@@ -104,7 +105,7 @@ class _FeedingScheduleScreenState extends State<FeedingScheduleScreen> {
             }
           },
         ),
-        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () => _showModal())],
+        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () => _showModal()), const OwnerAppBarActions()],
       ),
       body: Column(children: [
         Container(margin: const EdgeInsets.all(16), padding: const EdgeInsets.all(12),

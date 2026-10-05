@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/owner_actions.dart';
 
 class CareLogsScreen extends StatefulWidget {
   const CareLogsScreen({super.key});
@@ -110,7 +111,7 @@ class _CareLogsScreenState extends State<CareLogsScreen> {
             }
           },
         ),
-        actions: [IconButton(icon: const Icon(Icons.add), onPressed: _showAddModal)],
+        actions: [IconButton(icon: const Icon(Icons.add), onPressed: _showAddModal), const OwnerAppBarActions()],
       ),
       body: Column(children: [
         Padding(
