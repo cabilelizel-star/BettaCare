@@ -278,7 +278,7 @@ class OrderTrackingScreen extends StatelessWidget {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   const Text('Order Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
                   const SizedBox(height: 10),
-                  ...[['Order ID', d['orderId']], ['Date', d['date']], ['Payment', 'Cash on Delivery'], ['Address', d['address']]].map((row) => Padding(
+                  ...[['Order ID', d['orderId']], ['Date', d['date']], ['Payment', d['payment'] ?? 'Cash on Delivery'], ['Address', d['address']]].map((row) => Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       SizedBox(width: 80, child: Text(row[0]!, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.textSecondary))),

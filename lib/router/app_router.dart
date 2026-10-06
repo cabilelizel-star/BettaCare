@@ -36,6 +36,7 @@ import '../screens/owner/schedule_screen.dart';
 import '../screens/owner/settings_screen.dart';
 
 // Customer screens
+import '../screens/shell/customer_shell.dart';
 import '../screens/customer/customer_dashboard.dart';
 import '../screens/customer/browse_fish_screen.dart';
 import '../screens/customer/place_order_screen.dart';
@@ -169,9 +170,17 @@ GoRouter createRouter(AppAuthProvider authProvider) {
         },
       ),
 
-      // Customer screens
-      GoRoute(path: '/customer/dashboard', builder: (context, state) => const CustomerDashboard()),
-      GoRoute(path: '/customer/browse', builder: (context, state) => const BrowseFishScreen()),
+      // Customer Application Shell (Bottom Navigation Bar: HOME, BROWSE, ORDERS, MESSAGES, PROFILE)
+      ShellRoute(
+        builder: (context, state, child) => CustomerShell(child: child),
+        routes: [
+          GoRoute(path: '/customer/dashboard', builder: (context, state) => const CustomerDashboard()),
+          GoRoute(path: '/customer/browse', builder: (context, state) => const BrowseFishScreen()),
+          GoRoute(path: '/customer/orders', builder: (context, state) => const TrackOrdersScreen()),
+          GoRoute(path: '/customer/messages', builder: (_, __) => const CustomerMessagesScreen()),
+          GoRoute(path: '/customer/profile', builder: (context, state) => const ProfileScreen()),
+        ],
+      ),
       GoRoute(
         path: '/customer/place-order',
         builder: (context, state) {
@@ -179,8 +188,6 @@ GoRouter createRouter(AppAuthProvider authProvider) {
           return PlaceOrderScreen(fish: fish);
         },
       ),
-      GoRoute(path: '/customer/orders', builder: (context, state) => const TrackOrdersScreen()),
-      GoRoute(path: '/customer/messages', builder: (_, __) => const CustomerMessagesScreen()),
       GoRoute(
         path: '/customer/track/:orderId',
         builder: (context, state) => OrderTrackingScreen(orderId: state.pathParameters['orderId']!),

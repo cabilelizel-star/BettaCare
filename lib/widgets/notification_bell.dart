@@ -107,7 +107,10 @@ class NotificationBell extends StatelessWidget {
               ? db.collection('orders').where('userId', isEqualTo: uid).snapshots()
               : const Stream.empty()),
       builder: (context, ordersSnap) {
-        final pendingCount = ordersSnap.data?.docs.length ?? 0;
+        final pendingCount = ordersSnap.data?.docs.where((d) {
+          final status = (d.data() as Map)['status'] as String? ?? '';
+          return status != 'Cancelled';
+        }).length ?? 0;
 
         return StreamBuilder<QuerySnapshot>(
           stream: db.collection('chats').snapshots(),
@@ -322,7 +325,7 @@ class _CustomerNotificationsList extends StatelessWidget {
 
             final activeOrders = orders.where((d) {
               final status = (d.data() as Map)['status'];
-              return status != 'Pending' && status != 'Cancelled';
+              return status != 'Cancelled';
             }).toList();
 
             if (activeOrders.isEmpty && chats.isEmpty) {

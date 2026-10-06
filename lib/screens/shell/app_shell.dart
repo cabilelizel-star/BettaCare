@@ -47,7 +47,12 @@ class AppShell extends StatelessWidget {
             const OwnerAppBarActions()
           else ...[
             const NotificationBell(),
-            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
+              tooltip: 'Sign Out',
+              onPressed: () => confirmSignOut(context),
+            ),
+            const SizedBox(width: 4),
           ],
         ],
       ),
@@ -109,85 +114,101 @@ class CustomerDrawer extends StatelessWidget {
       backgroundColor: const Color(0xFF0B1727),
       child: Column(
         children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(color: Color(0xFF0B1727)),
-            margin: EdgeInsets.zero,
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF3B82F6), width: 1.5),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          'assets/images/betta-logo.jpg',
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(Icons.set_meal, color: Colors.white70),
+          // ── Header Section ─────────────────────────────────────
+          SafeArea(
+            bottom: false,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFF3B82F6), width: 1.5),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            'assets/images/betta-logo.jpg',
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Icon(Icons.set_meal, color: Colors.white70, size: 22),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('BettaCare', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-                        Text('Fish Management System', style: TextStyle(fontSize: 11, color: Color(0xFF60A5FA))),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF064E3B).withAlpha(180),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFF059669).withAlpha(120)),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('👤 ', style: TextStyle(fontSize: 12)),
-                      Text('Customer Account', style: TextStyle(fontSize: 12, color: Color(0xFF34D399), fontWeight: FontWeight.w600)),
+                      const SizedBox(width: 12),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'BettaCare',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.2),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'Fish Management System',
+                            style: TextStyle(fontSize: 12, color: Color(0xFF93C5FD), fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF064E3B).withAlpha(180),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFF059669).withAlpha(120)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('👤 ', style: TextStyle(fontSize: 12)),
+                        Text(
+                          'Customer Account',
+                          style: TextStyle(fontSize: 12, color: Color(0xFF34D399), fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 
-          const SizedBox(height: 8),
+          const Divider(color: Colors.white12, height: 1),
 
+          // ── Menu Navigation Items ──────────────────────────────
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               children: items.map((item) {
                 final active = path.startsWith(item['path'] as String);
                 return Container(
                   margin: const EdgeInsets.only(bottom: 4),
                   child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                    minLeadingWidth: 28,
                     leading: Icon(
                       item['icon'] as IconData,
-                      color: active ? Colors.white : const Color(0xFF9CA3AF),
-                      size: 20,
+                      color: active ? Colors.white : const Color(0xFF94A3B8),
+                      size: 24,
                     ),
                     title: Text(
                       item['label'] as String,
                       style: TextStyle(
-                        fontSize: 14,
-                        color: active ? Colors.white : const Color(0xFFD1D5DB),
-                        fontWeight: active ? FontWeight.bold : FontWeight.w500,
+                        fontSize: 16,
+                        color: active ? Colors.white : const Color(0xFFE2E8F0),
+                        fontWeight: active ? FontWeight.bold : FontWeight.w600,
+                        letterSpacing: 0.2,
                       ),
                     ),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                     tileColor: active ? const Color(0xFF1D4ED8) : Colors.transparent,
                     onTap: () {
                       Navigator.pop(context);
@@ -199,39 +220,43 @@ class CustomerDrawer extends StatelessWidget {
             ),
           ),
 
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                const Divider(color: Colors.white12, height: 1),
-                const SizedBox(height: 12),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
+          // ── Footer Profile Section ─────────────────────────────
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            decoration: const BoxDecoration(
+              color: Color(0xFF070F1B),
+              border: Border(top: BorderSide(color: Colors.white12, width: 1)),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                children: [
+                  CircleAvatar(
                     backgroundColor: const Color(0xFF10B981),
-                    radius: 20,
+                    radius: 18,
                     child: Text(
                       initial,
-                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  title: Text(
-                    email,
-                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
-                    overflow: TextOverflow.ellipsis,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          email,
+                          style: const TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w600),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        const Text('Customer Account', style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 12, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
                   ),
-                  subtitle: const Text('Customer', style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 11)),
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.logout, color: Color(0xFFD1D5DB), size: 20),
-                  title: const Text('Sign Out', style: TextStyle(color: Color(0xFFD1D5DB), fontSize: 14, fontWeight: FontWeight.w500)),
-                  onTap: () {
-                    Navigator.pop(context);
-                    confirmSignOut(context);
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -263,97 +288,108 @@ class OwnerDrawer extends StatelessWidget {
       {'path': '/owner/payment-management', 'label': 'Payment Management',  'icon': Icons.payments_outlined},
       {'path': '/owner/messages',           'label': 'Messages',            'icon': Icons.chat_bubble_outline},
       {'path': '/owner/reports',            'label': 'Reports',             'icon': Icons.show_chart_rounded},
+      {'path': '/owner/settings',           'label': 'Settings',            'icon': Icons.settings_outlined},
     ];
-
-    // Settings is pinned at the bottom, above the user footer
-    const settingsPath  = '/owner/settings';
-    final settingsActive = path.startsWith(settingsPath);
 
     return Drawer(
       backgroundColor: const Color(0xFF0B1727),
       child: Column(
         children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(color: Color(0xFF0B1727)),
-            margin: EdgeInsets.zero,
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF3B82F6), width: 1.5),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          'assets/images/betta-logo.jpg',
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(Icons.set_meal, color: Colors.white70),
+          // ── Header Section ─────────────────────────────────────
+          SafeArea(
+            bottom: false,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFF3B82F6), width: 1.5),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            'assets/images/betta-logo.jpg',
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Icon(Icons.set_meal, color: Colors.white70, size: 22),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('BettaCare', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-                        Text('Fish Management System', style: TextStyle(fontSize: 10, color: Color(0xFF60A5FA))),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E3A8A).withAlpha(150),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFF2563EB).withAlpha(100)),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('🐠 ', style: TextStyle(fontSize: 11)),
-                      Text('Owner Account', style: TextStyle(fontSize: 11, color: Color(0xFF93C5FD), fontWeight: FontWeight.w600)),
+                      const SizedBox(width: 12),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'BettaCare',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.2),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'Fish Management System',
+                            style: TextStyle(fontSize: 12, color: Color(0xFF93C5FD), fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E3A8A).withAlpha(150),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFF2563EB).withAlpha(100)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('🐠 ', style: TextStyle(fontSize: 12)),
+                        Text(
+                          'Owner Account',
+                          style: TextStyle(fontSize: 12, color: Color(0xFF93C5FD), fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 
-          const SizedBox(height: 4),
+          const Divider(color: Colors.white12, height: 1),
 
+          // ── Menu Navigation Items ──────────────────────────────
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               children: items.map((item) {
                 final active = path.startsWith(item['path'] as String);
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 2),
+                  margin: const EdgeInsets.only(bottom: 3),
                   child: ListTile(
-                    dense: true,
-                    visualDensity: const VisualDensity(vertical: -1),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    minLeadingWidth: 28,
                     leading: Icon(
                       item['icon'] as IconData,
-                      color: active ? Colors.white : const Color(0xFF9CA3AF),
-                      size: 19,
+                      color: active ? Colors.white : const Color(0xFF94A3B8),
+                      size: 24,
                     ),
                     title: Text(
                       item['label'] as String,
                       style: TextStyle(
-                        fontSize: 13,
-                        color: active ? Colors.white : const Color(0xFFD1D5DB),
-                        fontWeight: active ? FontWeight.bold : FontWeight.w500,
+                        fontSize: 16,
+                        color: active ? Colors.white : const Color(0xFFE2E8F0),
+                        fontWeight: active ? FontWeight.bold : FontWeight.w600,
+                        letterSpacing: 0.2,
                       ),
                     ),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                     tileColor: active ? const Color(0xFF1D4ED8) : Colors.transparent,
                     onTap: () {
                       Navigator.pop(context);
@@ -365,40 +401,18 @@ class OwnerDrawer extends StatelessWidget {
             ),
           ),
 
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 4),
-            child: Column(
-              children: [
-                // ── Settings pinned item ──────────────────────
-                Container(
-                  margin: const EdgeInsets.only(bottom: 4),
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.settings_outlined,
-                      color: settingsActive ? Colors.white : const Color(0xFF9CA3AF),
-                      size: 20,
-                    ),
-                    title: Text(
-                      'Settings',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: settingsActive ? Colors.white : const Color(0xFFD1D5DB),
-                        fontWeight: settingsActive ? FontWeight.bold : FontWeight.w500,
-                      ),
-                    ),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    tileColor: settingsActive ? const Color(0xFF1D4ED8) : Colors.transparent,
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.go(settingsPath);
-                    },
-                  ),
-                ),
-                const Divider(color: Colors.white12, height: 1),
-                const SizedBox(height: 8),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
+          // ── Footer Profile Section ─────────────────────────────
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            decoration: const BoxDecoration(
+              color: Color(0xFF070F1B),
+              border: Border(top: BorderSide(color: Colors.white12, width: 1)),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                children: [
+                  CircleAvatar(
                     backgroundColor: const Color(0xFF3B82F6),
                     radius: 18,
                     child: Text(
@@ -406,23 +420,24 @@ class OwnerDrawer extends StatelessWidget {
                       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  title: Text(
-                    email,
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
-                    overflow: TextOverflow.ellipsis,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          email,
+                          style: const TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w600),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        const Text('Owner Account', style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 12, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
                   ),
-                  subtitle: const Text('Owner', style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 11)),
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.logout, color: Color(0xFFD1D5DB), size: 20),
-                  title: const Text('Sign Out', style: TextStyle(color: Color(0xFFD1D5DB), fontSize: 14, fontWeight: FontWeight.w500)),
-                  onTap: () {
-                    Navigator.pop(context);
-                    confirmSignOut(context);
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

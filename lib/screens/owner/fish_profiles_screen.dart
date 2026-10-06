@@ -59,6 +59,9 @@ class _FishProfilesScreenState extends State<FishProfilesScreen> {
     final typeCtrl          = TextEditingController(text: fish?['type']                ?? '');
     final colorCtrl         = TextEditingController(text: fish?['color']               ?? '');
     final ageCtrl           = TextEditingController(text: fish?['age']                 ?? '');
+    final priceCtrl         = TextEditingController(text: fish?['price']?.toString()   ?? '500');
+    final stockCtrl         = TextEditingController(text: fish?['stock']?.toString()   ?? '1');
+    final descCtrl          = TextEditingController(text: fish?['description'] ?? fish?['notes'] ?? '');
     final notesCtrl         = TextEditingController(text: fish?['notes']               ?? '');
     // Water change
     final breedingNotesCtrl = TextEditingController(text: fish?['breedingNotes']       ?? '');
@@ -117,6 +120,24 @@ class _FishProfilesScreenState extends State<FishProfilesScreen> {
                   Expanded(child: AppTextField(
                       label: 'Age', hint: 'e.g. 6 months', controller: ageCtrl)),
                 ]),
+                const SizedBox(height: 12),
+
+                // Price + Stock Row
+                Row(children: [
+                  Expanded(child: AppTextField(
+                      label: 'Price (₱)', hint: '500', controller: priceCtrl, keyboardType: TextInputType.number)),
+                  const SizedBox(width: 12),
+                  Expanded(child: AppTextField(
+                      label: 'Stock', hint: '1', controller: stockCtrl, keyboardType: TextInputType.number)),
+                ]),
+                const SizedBox(height: 12),
+
+                // Description
+                AppTextField(
+                    label: 'Description for Customer Store',
+                    hint: 'e.g. A Split tail Betta with metallic silver-copper scales...',
+                    controller: descCtrl,
+                    maxLines: 2),
                 const SizedBox(height: 12),
 
                 // Gender
@@ -486,6 +507,10 @@ class _FishProfilesScreenState extends State<FishProfilesScreen> {
                             'type':                typeCtrl.text.trim(),
                             'color':               colorCtrl.text.trim(),
                             'age':                 ageCtrl.text.trim(),
+                            'price':               double.tryParse(priceCtrl.text.replaceAll('₱', '').trim()) ?? 500,
+                            'stock':               int.tryParse(stockCtrl.text.trim()) ?? 1,
+                            'description':         descCtrl.text.trim(),
+                            'status':              fish?['status'] ?? 'Available',
                             'gender':              gender,
                             'health':              health,
                             'breedingStatus':      breeding,

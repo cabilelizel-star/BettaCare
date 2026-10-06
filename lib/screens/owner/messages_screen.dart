@@ -47,14 +47,28 @@ class MessagesScreen extends StatelessWidget {
         stream: db.collection('chats').orderBy('lastAt', descending: true).snapshots(),
         builder: (context, snap) {
           if (!snap.hasData) return const LoadingWidget();
-          final docs = snap.data!.docs;
+          final allDocs = snap.data!.docs;
 
-          if (docs.isEmpty) {
+          if (allDocs.isEmpty) {
             return const EmptyState(
               icon: Icons.chat_bubble_outline,
               message: 'No conversations yet.\nChats appear when customers message you.',
             );
           }
+
+          // Deduplicate by userId so owner sees 1 General Inquiry conversation card per customer
+          final Map<String, QueryDocumentSnapshot> uniqueCustomerChats = {};
+          for (var doc in allDocs) {
+            final data = doc.data() as Map<String, dynamic>;
+            final uId = (data['userId'] ?? doc.id).toString();
+            if (uId.isNotEmpty) {
+              if (!uniqueCustomerChats.containsKey(uId) || doc.id == uId) {
+                uniqueCustomerChats[uId] = doc;
+              }
+            }
+          }
+
+          final docs = uniqueCustomerChats.values.toList();
 
           return ListView.builder(
             itemCount: docs.length,
@@ -64,6 +78,7 @@ class MessagesScreen extends StatelessWidget {
               final unread = (d['unreadOwner'] ?? 0) as int;
               final hasUnread = unread > 0;
               final ts = d['lastAt'] as Timestamp?;
+              final customerName = (d['customerName'] ?? 'Customer').toString();
 
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -73,17 +88,16 @@ class MessagesScreen extends StatelessWidget {
                     gradient: const LinearGradient(colors: [AppTheme.primary, Color(0xFF06B6D4)]),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(Icons.set_meal, color: Colors.white, size: 22),
+                  child: const Icon(Icons.person_rounded, color: Colors.white, size: 24),
                 ),
                 title: Text(
-                  d['customerName'] ?? 'Customer',
+                  customerName,
                   style: TextStyle(fontSize: 14, fontWeight: hasUnread ? FontWeight.bold : FontWeight.w600, color: AppTheme.textPrimary),
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${d['fish'] ?? ''} · ${d['orderId'] ?? ''}',
-                        style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+                    const Text('General Inquiry', style: TextStyle(fontSize: 11, color: AppTheme.textSecondary, fontWeight: FontWeight.w500)),
                     Text(
                       d['lastMessage']?.isNotEmpty == true ? d['lastMessage'] : 'No messages yet',
                       maxLines: 1,
@@ -113,8 +127,8 @@ class MessagesScreen extends StatelessWidget {
                 ),
                 onTap: () => context.push('/owner/chat/${doc.id}', extra: {
                   'orderId': d['orderId'] ?? '',
-                  'fish': d['fish'] ?? '',
-                  'customerName': d['customerName'] ?? 'Customer',
+                  'fish': 'General Inquiry',
+                  'customerName': customerName,
                 }),
               );
             },
